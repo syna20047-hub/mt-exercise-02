@@ -20,24 +20,24 @@ done
 
 # download a different interesting data set!
 
-mkdir -p $data/grimm
+mkdir -p $data/alice
 
-mkdir -p $data/grimm/raw
+mkdir -p $data/alice/raw
 
-wget https://www.gutenberg.org/files/52521/52521-0.txt
-mv 52521-0.txt $data/grimm/raw/tales.txt
+# download the file directly to the name "data/alice/raw/alice.txt"
+curl -L https://www.gutenberg.org/cache/epub/11/pg11.txt -o $data/alice/raw/alice.txt
 
-# preprocess slightly
+# preprocess slightly: read alice.txt, send its contents to preprocess_raw.py, save the output as alice.cleaned.txt
 
-cat $data/grimm/raw/tales.txt | python $base/scripts/preprocess_raw.py > $data/grimm/raw/tales.cleaned.txt
+cat $data/alice/raw/alice.txt | python $base/scripts/preprocess_raw.py > $data/alice/raw/alice.cleaned.txt
 
 # tokenize, fix vocabulary upper bound
 
-cat $data/grimm/raw/tales.cleaned.txt | python $base/scripts/preprocess.py --vocab-size 5000 --tokenize --lang "en" --sent-tokenize > \
-    $data/grimm/raw/tales.preprocessed.txt
+cat $data/alice/raw/alice.cleaned.txt | python $base/scripts/preprocess.py --vocab-size 5000 --tokenize --lang "en" --sent-tokenize > \
+    $data/alice/raw/alice.preprocessed.txt
 
 # split into train, valid and test
 
-head -n 440 $data/grimm/raw/tales.preprocessed.txt | tail -n 400 > $data/grimm/valid.txt
-head -n 840 $data/grimm/raw/tales.preprocessed.txt | tail -n 400 > $data/grimm/test.txt
-tail -n 3075 $data/grimm/raw/tales.preprocessed.txt | head -n 2955 > $data/grimm/train.txt
+head -n 200 $data/alice/raw/alice.preprocessed.txt > $data/alice/valid.txt
+head -n 400 $data/alice/raw/alice.preprocessed.txt | tail -n 200 > $data/alice/test.txt
+tail -n +401 $data/alice/raw/alice.preprocessed.txt > $data/alice/train.txt
