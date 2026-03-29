@@ -20,24 +20,23 @@ done
 
 # download a different interesting data set!
 
-mkdir -p $data/alice
+mkdir -p $data/sherlock
 
-mkdir -p $data/alice/raw
+mkdir -p $data/sherlock/raw
 
-# download the file directly to the name "data/alice/raw/alice.txt"
-curl -L https://www.gutenberg.org/cache/epub/11/pg11.txt -o $data/alice/raw/alice.txt
+# download the file directly to the name "data/sherlock/raw/sherlock.txt"
+curl -L https://www.gutenberg.org/cache/epub/1661/pg1661.txt -o $data/sherlock/raw/sherlock.txt
 
-# preprocess slightly: read alice.txt, send its contents to preprocess_raw.py, save the output as alice.cleaned.txt
+# preprocess slightly: read sherlock.txt, send its contents to preprocess_raw.py, save the output as sherlock.cleaned.txt
 
-cat $data/alice/raw/alice.txt | python $base/scripts/preprocess_raw.py > $data/alice/raw/alice.cleaned.txt
+cat $data/sherlock/raw/sherlock.txt | python $base/scripts/preprocess_raw.py > $data/sherlock/raw/sherlock.cleaned.txt
 
 # tokenize, fix vocabulary upper bound
 
-cat $data/alice/raw/alice.cleaned.txt | python $base/scripts/preprocess.py --vocab-size 5000 --tokenize --lang "en" --sent-tokenize > \
-    $data/alice/raw/alice.preprocessed.txt
+cat $data/sherlock/raw/sherlock.cleaned.txt | python $base/scripts/preprocess.py --vocab-size 5000 --tokenize --lang "en" --sent-tokenize > \
+    $data/sherlock/raw/sherlock.preprocessed.txt
 
 # split into train, valid and test
-
-head -n 200 $data/alice/raw/alice.preprocessed.txt > $data/alice/valid.txt
-head -n 400 $data/alice/raw/alice.preprocessed.txt | tail -n 200 > $data/alice/test.txt
-tail -n +401 $data/alice/raw/alice.preprocessed.txt > $data/alice/train.txt
+head -n 400 $data/sherlock/raw/sherlock.preprocessed.txt > $data/sherlock/valid.txt
+head -n 800 $data/sherlock/raw/sherlock.preprocessed.txt | tail -n 400 > $data/sherlock/test.txt
+tail -n +801 $data/sherlock/raw/sherlock.preprocessed.txt > $data/sherlock/train.txt
