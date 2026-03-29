@@ -104,15 +104,15 @@ Create and activate the virtual environment:
 python3.11 -m virtualenv venvs/torch3
 source venvs/torch3/bin/activate
 
-# Requirements
+### Requirements
 Install the required packages:
 ./scripts/install_packages.sh
 python -c "import nltk; nltk.download('punkt_tab')"
 python -c "import nltk; nltk.download('punkt')"
 
-# Steps
+###Steps
 
-Data preprocessing
+### Data preprocessing
 I modified scripts/download_data.sh so that it:
 - downloads the Sherlock Holmes text
 - stores the raw file under data/sherlock/raw/
@@ -127,14 +127,14 @@ I modified scripts/download_data.sh so that it:
 Run preprocessing from the repository root:
 bash scripts/download_data.sh
 
-Final corpus statistics
+### Final corpus statistics
 The final preprocessed Sherlock corpus contains:
 - 4037 training segments
 - 400 validation segments
 - 400 test segments
 Total: 4837 preprocessed segments
 
-Training
+### Training
 Training was run from:
 cd tools/pytorch-examples/word_language_model
 Command used:
@@ -142,12 +142,12 @@ python main.py --data ../../../data/sherlock --model LSTM --epochs 10 --dropout 
 
 Note: --accel was not used because it caused a local environment error related to torch.accelerator, so training was done on CPU.
 
-Task 1 results
+### Task 1 results
 Final training run:
 final validation perplexity: 84.50
 final test perplexity: 72.06
 
-Text generation
+### Text generation
 Generated sample text with:
 python generate.py --data ../../../data/sherlock --checkpoint sherlock_model.pt --words 200 --outf sherlock_generated.txt
 
