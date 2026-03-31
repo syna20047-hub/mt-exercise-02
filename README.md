@@ -1,93 +1,5 @@
 # MT Exercise 2: Pytorch RNN Language Models
 
-This repo shows how to train neural language models using [Pytorch example code](https://github.com/pytorch/examples/tree/master/word_language_model). Thanks to Emma van den Bold, the original author of these scripts. 
-
-# Requirements
-
-- This only works on a Unix-like system, with bash.
-- Python 3 must be installed on your system, i.e. the command `python3` must be available
-- Make sure virtualenv is installed on your system. To install, e.g.
-
-    `pip install virtualenv`
-
-# Steps
-
-Clone this repository in the desired place:
-
-    git clone https://github.com/marcamsler1/mt-exercise-02
-    cd mt-exercise-02
-
-Create a new virtualenv that uses Python 3. Please make sure to run this command outside of any virtual Python environment:
-
-    ./scripts/make_virtualenv.sh
-
-**Important**: Then activate the env by executing the `source` command that is output by the shell script above.
-
-Download and install required software:
-
-    ./scripts/install_packages.sh
-
-Download and preprocess data:
-
-    ./scripts/download_data.sh
-
-Train a model:
-
-    ./scripts/train.sh
-
-The training process can be interrupted at any time, and the best checkpoint will always be saved.
-
-Generate (sample) some text from a trained model with:
-
-    ./scripts/generate.sh
-
-
-## Task 1: Custom dataset
-
-# MT Exercise 2: Pytorch RNN Language Models
-
-This repo shows how to train neural language models using [Pytorch example code](https://github.com/pytorch/examples/tree/master/word_language_model). Thanks to Emma van den Bold, the original author of these scripts. 
-
-# Requirements
-
-- This only works on a Unix-like system, with bash.
-- Python 3 must be installed on your system, i.e. the command `python3` must be available
-- Make sure virtualenv is installed on your system. To install, e.g.
-
-    `pip install virtualenv`
-
-# Steps
-
-Clone this repository in the desired place:
-
-    git clone https://github.com/marcamsler1/mt-exercise-02
-    cd mt-exercise-02
-
-Create a new virtualenv that uses Python 3. Please make sure to run this command outside of any virtual Python environment:
-
-    ./scripts/make_virtualenv.sh
-
-**Important**: Then activate the env by executing the `source` command that is output by the shell script above.
-
-Download and install required software:
-
-    ./scripts/install_packages.sh
-
-Download and preprocess data:
-
-    ./scripts/download_data.sh
-
-Train a model:
-
-    ./scripts/train.sh
-
-The training process can be interrupted at any time, and the best checkpoint will always be saved.
-
-Generate (sample) some text from a trained model with:
-
-    ./scripts/generate.sh
-
-
 ## Task 1: Custom dataset
 
 This repository uses "The Adventures of Sherlock Holmes" from Project Gutenberg as the custom dataset for Task 1.
@@ -158,3 +70,57 @@ Files changed
 For Task 1, the main changes are:
 - scripts/download_data.sh
 - README.md
+
+## Task 2: Dropout experiment
+
+For Task 2, I trained 5 LSTM language models on the Sherlock Holmes dataset from Task 1, varying only the dropout setting:
+
+- 0.0
+- 0.2
+- 0.4
+- 0.6
+- 0.8
+
+### Changes made
+
+- Modified `tools/pytorch-examples/word_language_model/main.py`
+  - added a `--logfile` argument
+  - saved training, validation, and final test perplexities in TSV format
+- Added `tools/pytorch-examples/word_language_model/analyze_dropout_logs.py`
+  - reads the TSV log files
+  - creates:
+    - training perplexity table
+    - validation perplexity table
+    - test perplexity table
+    - training perplexity plot
+    - validation perplexity plot
+
+### Commands and order of execution
+
+From the repository root:
+
+```bash
+source venvs/torch3/bin/activate
+bash scripts/download_data.sh
+cd tools/pytorch-examples/word_language_model
+
+Run the 5 dropout experiments:
+python main.py --data ../../../data/sherlock --model LSTM --epochs 10 --dropout 0.0 --save sherlock_d0.pt --logfile logs/log_d0.tsv
+python main.py --data ../../../data/sherlock --model LSTM --epochs 10 --dropout 0.2 --save sherlock_d02.pt --logfile logs/log_d02.tsv
+python main.py --data ../../../data/sherlock --model LSTM --epochs 10 --dropout 0.4 --save sherlock_d04.pt --logfile logs/log_d04.tsv
+python main.py --data ../../../data/sherlock --model LSTM --epochs 10 --dropout 0.6 --save sherlock_d06.pt --logfile logs/log_d06.tsv
+python main.py --data ../../../data/sherlock --model LSTM --epochs 10 --dropout 0.8 --save sherlock_d08.pt --logfile logs/log_d08.tsv
+
+Create tables and plots:
+python analyze_dropout_logs.py
+
+Generate text from best and worst models:
+python generate.py --data ../../../data/sherlock --checkpoint sherlock_d02.pt --words 200 --outf sherlock_best.txt
+python generate.py --data ../../../data/sherlock --checkpoint sherlock_d08.pt --words 200 --outf sherlock_worst.txt
+
+Final test perplexities:
+- dropout 0.0 -> 83.60
+- dropout 0.2 -> 72.06
+- dropout 0.4 -> 74.82
+- dropout 0.6 -> 77.35
+- dropout 0.8 -> 101.42
